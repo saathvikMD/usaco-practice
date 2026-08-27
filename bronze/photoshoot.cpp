@@ -13,54 +13,54 @@ int main() {
 
     cin >> n;
 
-    vector<bool> used(n);
     vector<int> sums(n - 1);
 
     for (int i = 0; i < n - 1; i++) {
         cin >> sums[i];
     }
 
-    int prev_value, curr_value;
-    bool done = false;
+    vector<bool> used(n);
 
-    for (int i = 1; i <= n and not done; i++) {
-        prev_value = i;
+    for (int i = 0; i < n; i++) {
+        used[i] = false;
+    }
 
-        for (int j = 0; j < n; j++) {
-            used[j] = false;
-        }
+    for (int i = 1; i <= n; i++) {
+        bool done = false;
+        int prev_value = i;
+        vector<bool> used_temp = used;
+        used_temp[i - 1] = true;
 
-        used[prev_value - 1] = true;
+        for (int j = 1; j < n; j++) {
+            int curr = sums[j - 1] - prev_value;
 
-        for (int j = 1; j < n and not done; j++) {
-            curr_value = sums[j - 1] - prev_value;
-
-            if (curr_value > 0 and curr_value <= n) {
-                if (used[curr_value - 1] == true) {
+            if (curr > 0 and curr <= n) {
+                if (used_temp[curr - 1]) {
                     done = true;
+                } else {
+                    used_temp[curr - 1] = true;
                 }
-              
-                used[curr_value - 1] = true;
-                prev_value = curr_value;
             } else {
                 done = true;
             }
+
+            prev_value = curr;
         }
 
-        done = not done;
-
-        if (done) {
+        if (not done) {
             prev_value = i;
+
+            for (int j = 1; j < n; j++) {
+                cout << prev_value << " ";
+                
+                prev_value = sums[j - 1] - prev_value;
+            }
+
+            cout << prev_value;
+
+            return 0;
         }
     }
-
-    for (int j = 1; j < n; j++) {
-        cout << prev_value << " ";
-        curr_value = sums[j - 1] - prev_value;
-        prev_value = curr_value;
-    }
-
-    cout << prev_value;
 
     return 0;
 }
