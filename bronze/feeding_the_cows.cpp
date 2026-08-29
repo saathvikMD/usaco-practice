@@ -19,45 +19,43 @@ int main() {
 
         cin >> cows;
 
-        string grass(n, '.');
-        int range = -1;
+        string patches(n, '.');
+
+        int prev_patches = - k - 1;
+        int patch_count = 0;
 
         for (int i = 0; i < n; i++) {
-            if (cows[i] == 'G') {
-                bool placed = false;
+            if (cows[i] == 'G' and i - prev_patches > k) {
+                patches[min(n - 1, i + k)] = 'G';
+                prev_patches = i + k;
+                patch_count += 1;
+            }
+        }
 
-                if (range < i) {
-                    for (int j = min(i + k, n - 1); j >= max(0, i - k) and not placed; j--) {
-                        if (grass[j] == '.') {
-                            grass[j] = 'G';
-                            placed = true;
-                            range = j + k;
-                        }
+        prev_patches = - k - 1;
+
+        for (int i = 0; i < n; i++) {
+            if (cows[i] == 'H' and i - prev_patches > k) {
+                bool done = false;
+
+                for (int j = min(n - 1, i + k); j >= 0 and not done; j--) {
+                    if (patches[j] == '.') {
+                        patches[j] = 'H';
+                        prev_patches = j;
+                        patch_count += 1;
+                        done = true;
                     }
                 }
             }
         }
 
-        range = -1;
+        cout << patch_count << "\n";
 
         for (int i = 0; i < n; i++) {
-            if (cows[i] == 'H') {
-                bool placed = false;
-
-                if (range < i) {
-                    for (int j = min(i + k, n - 1); j >= max(0, i - k) and not placed; j--) {
-                        if (grass[j] == '.') {
-                            grass[j] = 'H';
-                            placed = true;
-                            range = j + k;
-                        }
-                    }
-                }
-            }
+            cout << patches[i];
         }
 
-        cout << (n - count(grass.begin(), grass.end(), '.')) << "\n";
-        cout << grass << "\n";
+        cout << "\n";
     }
 
     return 0;
