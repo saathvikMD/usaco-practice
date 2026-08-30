@@ -6,51 +6,49 @@
 using namespace std;
 
 int main() {
-    int n, k, l;
+    long long n, k , l;
 
     cin >> n >> k >> l;
 
-    vector<int> cows(n);
+    vector<long long> cows(n);
 
-    for (int i = 0; i < n; i++) {
+    for (long long i = 0; i < n; i++) {
         cin >> cows[i];
     }
 
     sort(cows.begin(), cows.end());
-
-    int low = 1, high = n, answer = 0;
+    long long low = 1, high = n, answer = 0;
 
     while (low <= high) {
-        int i = low + (high - low) / 2;
-
+        long long h = (low + high + 1) / 2;
         bool passed = true;
 
-        if (cows[n - i] < i) {
-            bool done = false;
-            long long remaining = (long long) k * l;
+        if (cows[n - h] < h) {
+            long long remaining = k * l;
 
-            for (int j = n - i; j < n and not done; j++) {
-                if (cows[j] < i) {
-                    if (i - cows[j] <= k and remaining >= i - cows[j]) {
-                        remaining -= i - cows[j];
-                    } else {
-                        done = true;
+            for (long long i = n - h; i < n; i++) {
+                if (cows[i] < h) {
+                    if (h - cows[i] > remaining or h - cows[i] > k) {
                         passed = false;
+
+                        break;
+                    } else {
+                        remaining -= h - cows[i];
                     }
                 } else {
-                    done = true;
+                    break;
                 }
             }
         }
 
         if (passed) {
-            if (i > answer) {
-                answer = i;
-            }
+            low = h + 1;
 
-            low = i + 1;
+            if (h > answer) {
+                answer = h;
+            }
         } else {
-            high = i - 1;
+            high = h - 1;
         }
     }
 
