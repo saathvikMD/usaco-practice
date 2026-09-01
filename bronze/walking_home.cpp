@@ -21,29 +21,28 @@ int main() {
             cin >> grid[i];
         }
 
-        vector<vector<vector<pair<bool, int>>>> paths(n + 1, vector<vector<pair<bool, int>>>(n + 1));
+        vector<vector<vector<vector<int>>>> paths(n + 1, vector<vector<vector<int>>>(n + 1, vector<vector<int>>(k + 1, vector<int>(2, 0))));
 
-        paths[0][0].push_back({true, 0});
-        paths[0][0].push_back({false, 0});
+        paths[0][0][0][0] = 1;
+        paths[0][0][0][1] = 1;
 
         for (int x = 0; x < n; x++) {
             for (int y = 0; y < n; y++) {
                 if (grid[x][y] == '.') {
-                    for (int o = 0; o < paths[x][y].size(); o++) {
-                        bool direction = paths[x][y][o].first;
-                        int turns = paths[x][y][o].second;
+                    for (int turns = 0; turns < k + 1; turns++) {
+                        for (int direction = 0; direction < 2; direction++) {
+                            if (direction) {
+                                paths[x + 1][y][turns][direction] += paths[x][y][turns][direction];
 
-                        if (direction) {
-                            paths[x + 1][y].push_back({direction, turns});
+                                if (turns < k and x + y > 0) {
+                                    paths[x][y + 1][turns + 1][not direction] += paths[x][y][turns][direction];
+                                }
+                            } else {
+                                paths[x][y + 1][turns][direction] += paths[x][y][turns][direction];
 
-                            if (turns < k and x + y > 0) {
-                                paths[x][y + 1].push_back({not direction, turns + 1});
-                            }
-                        } else {
-                            paths[x][y + 1].push_back({direction, turns});
-
-                            if (turns < k and x + y > 0) {
-                                paths[x + 1][y].push_back({not direction, turns + 1});
+                                if (turns < k and x + y > 0) {
+                                    paths[x + 1][y][turns + 1][not direction] += paths[x][y][turns][direction];
+                                }
                             }
                         }
                     }
@@ -51,7 +50,15 @@ int main() {
             }
         }
 
-        cout << paths[n - 1][n - 1].size() << "\n";
+        int diff_paths = 0;
+
+        for (int i = 0; i < k + 1; i++) {
+            for (int j = 0; j < 2; j++) {
+                diff_paths += paths[n - 1][n - 1][i][j];
+            }
+        }
+
+        cout << diff_paths << "\n";
     }
 
     return 0;
