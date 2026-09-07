@@ -6,67 +6,72 @@
 using namespace std;
 
 int main() {
-    int test_cases;
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
 
-    cin >> test_cases;
+    int t;
 
-    for (int iteration = 0; iteration < test_cases; iteration++) {
+    cin >> t;
+
+    for (int iteration = 0; iteration < t; iteration++) {
         int n;
 
         cin >> n;
 
         vector<tuple<long long, long long, long long>> plants(n);
+        long long temp;
 
         for (int i = 0; i < n; i++) {
-            cin >> get<1>(plants[i]);
+            cin >> temp;
+
+            get<1>(plants[i]) = temp;
         }
 
         for (int i = 0; i < n; i++) {
-            cin >> get<2>(plants[i]);
+            cin >> temp;
+
+            get<2>(plants[i]) = temp;
         }
 
         for (int i = 0; i < n; i++) {
-            cin >> get<0>(plants[i]);
+            cin >> temp;
+
+            get<0>(plants[i]) = temp;
         }
 
         sort(plants.begin(), plants.end());
 
-        long long max_days = LONG_LONG_MAX;
-        long long min_days = 0LL;
-        bool done =  false;
+        long long days = 0;
+        bool possible = true;
 
         for (int i = 0; i < n - 1; i++) {
-            if (get<2>(plants[i]) < get<2>(plants[i + 1])) {
-                if (get<1>(plants[i]) + get<2>(plants[i]) * min_days > get<1>(plants[i + 1]) + get<2>(plants[i + 1]) * min_days) {
-                    max_days = min(max_days, (get<1>(plants[i]) - get<1>(plants[i + 1]) - 1) / (get<2>(plants[i + 1]) - get<2>(plants[i])));
+            long long height_diff = get<1>(plants[i]) - get<1>(plants[i + 1]);
+
+            if (height_diff <= 0) {
+                long long growth_rate = (get<2>(plants[i]) - get<2>(plants[i + 1]));
+
+                if (growth_rate > 0) {
+                    days = max((long long) ceil((double) (-height_diff + 1) / growth_rate), days);
                 } else {
-                    cout << -1 << "\n";
-                    done = true;
+                    possible = false;
                     break;
                 }
-            } else if (get<2>(plants[i]) == get<2>(plants[i + 1])) {
-                if (get<1>(plants[i]) <= get<1>(plants[i + 1])) {
-                    cout << -1 << "\n";
-                    done = true;
-                    break;
-                }
-            } else {
-                if (get<1>(plants[i]) <= get<1>(plants[i + 1])) {
-                    long long curr_min = (get<1>(plants[i + 1]) - get<1>(plants[i])) / (get<2>(plants[i]) - get<2>(plants[i + 1])) + 1;
-
-                    min_days = max(min_days, curr_min);
-                }
-            }
-
-            if (min_days > max_days) {
-                cout << -1 << "\n";
-                done = true;
-                break;
             }
         }
 
-        if (not done) {
-            cout << min_days << "\n";
+        if (possible) {
+            for (int i = 0; i < n - 1; i++) {
+                if (get<1>(plants[i]) + get<2>(plants[i]) * days <= get<1>(plants[i + 1]) + get<2>(plants[i + 1]) * days) {
+                    possible = false;
+                    break;
+                }
+            }
+        }
+
+        if (possible) {
+            cout << days << "\n";
+        } else {
+            cout << -1 << "\n";
         }
     }
 
