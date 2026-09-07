@@ -6,6 +6,9 @@
 using namespace std;
 
 int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     freopen("angry.in", "r", stdin);
     freopen("angry.out", "w", stdout);
 
@@ -13,47 +16,69 @@ int main() {
 
     cin >> n;
 
-    vector<long long> positions(n);
+    vector<int> bales(n);
 
     for (int i = 0; i < n; i++) {
-        cin >> positions[i];
+        cin >> bales[i];
     }
 
-    sort(positions.begin(), positions.end());
-
-    int most_explosions = 0;
+    sort(bales.begin(), bales.end());
+    int max_exploded = 0;
 
     for (int i = 0; i < n; i++) {
-        vector<long long> exploding;
-        vector<long long> exploded;
+        int index = i - 1;
+        int prev_position = bales[i];
+        int exploded = 1;
+        int explosion_range = 1;
+        int next_bale = -1;
 
-        long long iteration = 1;
-
-        exploding.push_back(positions[i]);
-
-        while (exploding.size() > 0) {
-            for (int j = exploding.size() - 1; j >= 0; j--) {
-                long long exploding_bale = exploding[j];
-
-                exploding.erase(exploding.begin() + j);
-                exploded.push_back(exploding_bale);
-
-                for (int k = 0; k < n; k++) {
-                    if (abs(positions[k] - exploding_bale) <= iteration) {
-                        if (find(exploded.begin(), exploded.end(), positions[k]) == exploded.end() and find(exploding.begin(), exploding.end(), positions[k]) == exploding.end()) {
-                            exploding.push_back(positions[k]);
-                        }
-                    }
+        while (index >= 0) {
+            if (prev_position - bales[index] <= explosion_range) {
+                next_bale = index;
+                exploded += 1;
+            } else {
+                if (next_bale != -1) {
+                    index = next_bale;
+                    prev_position = bales[next_bale];
+                    explosion_range += 1;
+                    next_bale = -1;
+                } else {
+                    break;
                 }
             }
 
-            iteration += 1;
+            index -= 1;
         }
 
-        most_explosions = max(most_explosions, (int) exploded.size());
+        index = i + 1;
+        prev_position = bales[i];
+        explosion_range = 1;
+        next_bale = -1;
+
+        while (index < n) {
+            if (bales[index] - prev_position <= explosion_range) {
+                next_bale = index;
+                exploded += 1;
+            } else {
+                if (next_bale != -1) {
+                    index = next_bale;
+                    prev_position = bales[next_bale];
+                    explosion_range += 1;
+                    next_bale = -1;
+                } else {
+                    break;
+                }
+            }
+
+            index += 1;
+        }
+
+        if (exploded > max_exploded) {
+            max_exploded = exploded;
+        }
     }
 
-    cout << most_explosions;
+    cout << max_exploded;
 
     return 0;
 }
