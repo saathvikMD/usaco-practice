@@ -28,31 +28,35 @@ int main() {
 
     sort(shifts.begin(), shifts.end());
 
-    long long min_covered = shifts[0].second - shifts[0].first;
-    long long total_covered = shifts[0].second - shifts[0].first;
-    long long prev_start = shifts[0].first, prev_end = shifts[0].second;
+    long long total_shifts = shifts[0].second - shifts[0].first;
+    long long prev_end = shifts[0].second;
+    vector<pair<long long, long long>> alone;
+    alone.push_back({shifts[0].second - shifts[0].first, shifts[0].second});
+    long long min_alone = alone[0].first;
 
     for (int i = 1; i < n; i++) {
-        if (shifts[i].first == shifts[i - 1].first) {
-            min_covered = 0;
-            total_covered += max(0LL, shifts[i].second - prev_end);
-            prev_end = max(prev_end, shifts[i].second);
-        } else if (shifts[i].second <= prev_end) {
-            min_covered = 0;
-        } else if (prev_end > shifts[i].first) {
-            min_covered = min(min_covered, shifts[i].first - prev_start);
-            total_covered += shifts[i].second - prev_end;
-            prev_start = prev_end;
+        if (shifts[i].first >= prev_end) {
+            total_shifts += shifts[i].second - shifts[i].first;
             prev_end = shifts[i].second;
-        } else if (shifts[i].first >= prev_end) {
-            min_covered = min(min_covered, shifts[i].second - shifts[i].first);
-            total_covered += shifts[i].second - shifts[i].first;
-            prev_start = shifts[i].first;
+        } else if (shifts[i].second > prev_end) {
+            total_shifts += shifts[i].second - prev_end;
             prev_end = shifts[i].second;
         }
-    }
 
-    cout << total_covered - min_covered;
+        if (shifts[i].first >= alone[i - 1].second) {
+            alone.push_back({shifts[i].second - shifts[i].first, shifts[i].second});
+        } else if (shifts[i].second > alone[i - 1].second) {
+            alone[i - 1].first = max(0LL, alone[i - 1].first - (alone[i - 1].second - shifts[i].first));
+            min_alone = min(min_alone, alone[i - 1].first);
+            alone.push_back({shifts[i].second - alone[i - 1].second, shifts[i].second});
+        } else {
+            alone.push_back({0, -1});
+        }
+
+        min_alone = min(min_alone, alone[i].first);
+    }
+    
+    cout << total_shifts - min_alone;
 
     return 0;
 }
