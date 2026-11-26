@@ -17,9 +17,6 @@ int main() {
     cin >> n;
 
     vector<vector<bool>> grid(n, vector<bool>(n));
-    vector<int> rows(n, 0);
-    vector<int> cols(n, 0);
-    int remaining = 0;
 
     for (int i = 0; i < n; i++) {
         string row;
@@ -29,80 +26,87 @@ int main() {
         for (int j = 0; j < n; j++) {
             if (row[j] == 'L') {
                 grid[i][j] = true;
-                rows[i] -= 1;
-                cols[j] -= 1;
-                remaining += 1;
             } else {
                 grid[i][j] = false;
-                rows[i] += 1;
-                cols[j] += 1;
             }
         }
     }
 
-    if (remaining == 0 or remaining == n * n) {
+    for (int i = 0; i < n; i++) {
+        if (grid[0][i]) {
+            for (int j = 0; j < n; j++) {
+                grid[j][i] = not grid[j][i];
+            }
+        }
+    }
+
+    for (int i = 1; i < n; i++) {
+        if (grid[i][0]) {
+            for (int j = 0; j < n; j++) {
+                grid[i][j] = not grid[i][j];
+            }
+        }
+    }
+
+    int remaining = 0;
+
+    for (int i = 1; i < n; i++) {
+        for (int j = 1; j < n; j++) {
+            if (grid[i][j]) {
+                remaining += 1;
+            }
+        }
+    }
+
+    if (remaining == 0) {
+        cout << -1;
+    } else if (remaining == (n - 1) * (n - 1)) {
+        cout << "1 1";
+    } else if (remaining == 1) {
+        for (int i = 1; i < n; i++) {
+            for (int j = 1; j < n; j++) {
+                if (grid[i][j]) {
+                    cout << i + 1 << " " << j + 1;
+                }
+            }
+        }
+    } else if (remaining != (n - 1)) {
         cout << -1;
     } else {
-        int iter = 0;
-        while (remaining > 1 and iter < 1000) {
-            for (int i = 0; i < n; i++) {
-                if (rows[i] < 0) {
-                    for (int j = 0; j < n; j++) {
-                        if (not grid[i][j]) {
-                            cols[j] -= 2;
-                            remaining += 1;
-                        } else {
-                            cols[j] += 2;
-                            remaining -= 1;
-                        }
+        bool passed = false;
 
-                        grid[i][j] = not grid[i][j];
-                    }
+        for (int i = 1; i < n and not passed; i++) {
+            bool pass = true;
 
-                    rows[i] = -rows[i];
+            for (int j = 1; j < n; j++) {
+                if (not grid[i][j]) {
+                    pass = false;
                 }
             }
 
-            for (int i = 0; i < n; i++) {
-                if (cols[i] < 0) {
-                    for (int j = 0; j < n; j++) {
-                        if (not grid[j][i]) {
-                            rows[j] -= 2;
-                            remaining += 1;
-                        } else {
-                            rows[j] += 2;
-                            remaining -= 1;
-                        }
-
-                        grid[j][i] = not grid[j][i];
-                    }
-
-                    cols[i] = -cols[i];
-                }
+            if (pass) {
+                cout << i + 1 << " " << 1;
+                passed = true;
             }
-
-            iter += 1;
         }
 
-        if (iter == 1000) {
-            cout << -1;
-        } else {
-            bool done = false;
+        for (int i = 1; i < n and not passed; i++) {
+            bool pass = true;
 
-            for (int i = 0; i < n and not done; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (grid[i][j]) {
-                        cout << i + 1 << " " << j + 1;
-
-                        done = true;
-                        break;
-                    }
+            for (int j = 1; j < n; j++) {
+                if (not grid[j][i]) {
+                    pass = false;
                 }
             }
 
-            if (not done) {
-                cout << -1;
+            if (pass) {
+                cout << 1 << " " << i + 1;
+                passed = true;
             }
+        }
+
+        if (not passed) {
+            cout << -1;
         }
     }
 
