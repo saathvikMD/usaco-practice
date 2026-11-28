@@ -1,6 +1,6 @@
 // Problem: Following Directions
 // Contest: USACO January 2023 Silver
-// Link: https://usaco.org/index.php?page=viewproblem2&cpid=1267
+// Link: https://usaco.org/index.php?page=viewproblem2&cpid=1279
 
 #include <bits/stdc++.h>
 using namespace std;
